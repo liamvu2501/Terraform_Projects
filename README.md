@@ -1,2 +1,2 @@
 # Terraform_Projects
-Repo for Terraform related projects
+This is a repo for projects developed with Terraform
