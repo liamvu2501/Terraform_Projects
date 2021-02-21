@@ -18,8 +18,8 @@ var app = express(),
 app.use(bodyParser.json());
 
 //Using Multer to upload file to S3 buckets
-var bucketin = "S3BUCKETIN"; //This value will need to be replaced
-var bucketout = "S3BUCKETOUT"; //This value will need to be replaced
+var bucketin = "S3BucketIn"; //This value will need to be replaced
+var bucketout = "S3BucketOut"; //This value will need to be replaced
 
 var upload = multer({
     storage: multerS3({
@@ -33,7 +33,7 @@ var upload = multer({
 
 /*Get DynamoDB config*/
 var dynamodb = new aws.DynamoDB(); //Create Dynamo service object
-var tableName = "MYTABLENAME"; //This value will need to be replaced
+var tableName = "TableName"; //This value will need to be replaced
 
 /*When user make a request to the ALB, send out the index.html*/
 app.get('/', function (req, res) {
