@@ -33,7 +33,7 @@ var upload = multer({
 
 /*Get DynamoDB config*/
 var dynamodb = new aws.DynamoDB(); //Create Dynamo service object
-var tableName = "TableName"; //This value will need to be replaced
+var tableName = "MyTableName"; //This value will need to be replaced
 
 /*When user make a request to the ALB, send out the index.html*/
 app.get('/', function (req, res) {
@@ -104,7 +104,7 @@ app.post('/upload', upload.array('uploadFile',1), function (req, res, next) {
               }, 
               KeyConditionExpression: "Email = :e", 
               ProjectionExpression: "#uuid, #name, #phone, #status, #s3in, #s3out", 
-              TableName: TableName
+              TableName: tableName
             };
             dynamodb.query(queryItem, function(err, data) {
               if (err) {
