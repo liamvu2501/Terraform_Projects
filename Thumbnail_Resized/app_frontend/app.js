@@ -104,7 +104,7 @@ app.post('/upload', upload.array('uploadFile',1), function (req, res, next) {
               }, 
               KeyConditionExpression: "Email = :e", 
               ProjectionExpression: "#uuid, #name, #phone, #status, #s3in, #s3out", 
-              TableName: tableName
+              TableName: TableName
             };
             dynamodb.query(queryItem, function(err, data) {
               if (err) {
