@@ -6,9 +6,9 @@ var express = require('express'),
 
 const { v4: uuidv4 } = require('uuid');
 
-//Set region to us-east-2 for all resources
+//Set region for all resources
 aws.config.update({ 
-    region: 'us-east-2'
+    region: 'MyRegion'
 });
 
 /*Set S3 bucket for files uploading*/
