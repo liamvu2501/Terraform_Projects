@@ -15,13 +15,14 @@ resource "aws_vpc" "myvpc" {
   tags       = local.vpc_tags
 }
 
-#Create Public Subnets
+#Create Public Subnets with auto-assign pblic IPs
 resource "aws_subnet" "public_subnets" {
-  count             = length(var.subnets_cidr)
-  vpc_id            = aws_vpc.myvpc.id
-  cidr_block        = element(var.subnets_cidr, count.index)
-  availability_zone = element(var.azs, count.index)
-  tags              = local.vpc_tags
+  count                   = length(var.subnets_cidr)
+  vpc_id                  = aws_vpc.myvpc.id
+  cidr_block              = element(var.subnets_cidr, count.index)
+  availability_zone       = element(var.azs, count.index)
+  map_public_ip_on_launch = true
+  tags                    = local.vpc_tags
 }
 
 #Create Internet Gateway for the VPC

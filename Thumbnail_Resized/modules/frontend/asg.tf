@@ -13,7 +13,7 @@ locals {
 #Create ASG's Security Group
 resource "aws_security_group" "asg_sg" {
 
-  name        = "SG-ASG"
+  name        = "TF-SG-ASG"
   description = "Security group for ASG"
   vpc_id      = var.vpc_id
 
@@ -31,7 +31,7 @@ resource "aws_security_group" "asg_sg" {
       from_port   = ingress.value
       to_port     = ingress.value
       protocol    = "tcp"
-      cidr_blocks = ["10.53.0.0/16"]
+      cidr_blocks = [var.myvpc_cidr] #["10.53.0.0/16"]
     }
   }
   tags = local.asg_tags
@@ -51,8 +51,15 @@ resource "aws_launch_template" "mytemplate" {
   }
   key_name               = var.key_pair
   vpc_security_group_ids = [aws_security_group.asg_sg.id]
-  user_data              = filebase64("${path.module}/myscript.sh")
-  tags                   = local.asg_tags
+  #We will templatefile function to pass arguments into our shell script. Refer to https://stackoverflow.com/questions/62598410/how-to-pass-the-templatefile-function-to-user-data-argument-of-ec2-resource-in-t
+  #Base64 encoding is needed for user_data. The templatefile function will not do it so you will need to wrap it inside base64encode funtion
+  user_data = base64encode(templatefile("${path.module}/myscript.sh", {
+    region        = var.region
+    tfbucket_in   = var.tfbucket_in
+    tfbucket_out  = var.tfbucket_out
+    dynamodb_name = var.dynamodb_name
+  }))
+  tags = local.asg_tags
 }
 
 #Create Autoscailing Group
@@ -87,7 +94,7 @@ resource "aws_autoscaling_group" "myasg" {
 
 }
 
-#Either choose this or use Simple Step scailing with desired_capacity
+#Either choose this - Dynamic scailing base on avg CPU ultilization or use Simple Step scailing with desired_capacity
 resource "aws_autoscaling_policy" "myasgpolicy" {
   name                   = "myasgpolicy"
   autoscaling_group_name = aws_autoscaling_group.myasg.name

@@ -13,7 +13,7 @@ locals {
 #Create Load Balancer's Security Group
 resource "aws_security_group" "elb_sg" {
 
-  name        = "SG-ELB"
+  name        = "TF-SG-ELB"
   description = "Security group for ELB"
   vpc_id      = var.vpc_id
 
@@ -29,7 +29,7 @@ resource "aws_security_group" "elb_sg" {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = ["10.53.0.0/16"]
+    cidr_blocks = [var.myvpc_cidr] #["10.53.0.0/16"]
   }
   tags = local.alb_tags
 }

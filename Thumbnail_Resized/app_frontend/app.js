@@ -115,7 +115,7 @@ app.post('/upload', upload.array('uploadFile',1), function (req, res, next) {
                   //Loop through and print out all the items that associated with the email
                   data.Items.forEach(function(element, index, array){
                     res.write("\n\n--------------------------------" + "Item: " + (index+1) + "-----------------------------------");
-                    res.write("\nUUID: " + element.UUID.S + "    " + "Name: " + element.Name.S + "    " + "Phone: " + element.Phone.S + "    " + "Status: " + element.Status.N + "    " + "S3URL: " + element.S3In.S);
+                    res.write("\nUUID: " + element.UUID.S + "    " + "Name: " + element.Name.S + "    " + "Phone: " + element.Phone.S + "    " + "Status: " + element.Status.N + "    " + "S3In: " + element.S3In.S);
                   });
                   res.end();
                 }
@@ -139,7 +139,7 @@ app.get('/gallery', function (req, res) {
     res.write("List of items in DynamoDB table");
       data.Items.forEach(function(element, index, array){
       res.write("\n\n--------------------------------" + "Item: " + (index+1) + "-----------------------------------");
-      res.write("\nUUID: " + element.UUID.S + "    " + "Name: " + element.Name.S + "    " + "Phone: " + element.Phone.S + "    " + "Status: " + element.Status.N + "    " + "S3URL: " + element.S3In.S + "    " + "S3Out: " + element.S3Out.S);
+      res.write("\nUUID: " + element.UUID.S + "    " + "Name: " + element.Name.S + "    " + "Phone: " + element.Phone.S + "    " + "Status: " + element.Status.N + "    " + "S3In: " + element.S3In.S + "    " + "S3Out: " + element.S3Out.S);
     });
     res.end();
   }

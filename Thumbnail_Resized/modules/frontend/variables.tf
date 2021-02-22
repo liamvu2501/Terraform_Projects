@@ -10,6 +10,10 @@ variable "egress" {
   default     = [80, 443]
 }
 
+variable "myvpc_cidr" {
+  type = string
+}
+
 variable "vpc_id" {
   type = string
 }
@@ -36,15 +40,26 @@ variable "min_cap" {
 variable "max_cap" {
   type = number
 }
-/*
-variable "desired_cap" {
-  type = number
-}*/
 
 variable "mytf_instance_profile" {
   type = string
 }
 
 variable "key_pair" {
+  type = string
+}
+
+variable "region" {
+  type = string
+}
+
+variable "tfbucket_in" {
+  type = string
+}
+variable "tfbucket_out" {
+  type = string
+}
+
+variable "dynamodb_name" {
   type = string
 }
