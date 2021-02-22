@@ -1,3 +1,7 @@
+variable "region" {
+  type = string
+}
+
 #####################
 ### VPC variables ###
 #####################
@@ -34,10 +38,6 @@ variable "min_cap" {
 variable "max_cap" {
   type = number
 }
-/*
-variable "desired_cap" {
-  type = number
-}*/
 
 variable "key_pair" {
   type = string
@@ -63,10 +63,27 @@ variable "instance_role_name" {
   type = string
 }
 
+variable "lambda_role_name" {
+  type = string
+}
 
-#########################
-### Backend variables ###
-#########################
+##########################
+### DynampDB variables ###
+##########################
 variable "dynamodb_name" {
+  type = string
+}
+
+#####################
+### SNS variables ###
+#####################
+variable "topic_name" {
+  type = string
+}
+
+########################
+### Lambda variables ###
+########################
+variable "function_name" {
   type = string
 }
