@@ -1,3 +1,8 @@
+################################
+#### Create DynamoDB table #####
+################################
+
+#Create table with primary key = User's email + random generated UUID and enable DynamoDB Stream
 resource "aws_dynamodb_table" "tfdynamodb" {
   name           = var.dynamodb_name
   billing_mode   = "PROVISIONED"
@@ -10,7 +15,7 @@ resource "aws_dynamodb_table" "tfdynamodb" {
     name = "Email"
     type = "S"
   }
-  
+
   attribute {
     name = "UUID"
     type = "S"
