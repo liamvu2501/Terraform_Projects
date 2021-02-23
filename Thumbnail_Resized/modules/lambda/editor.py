@@ -13,15 +13,6 @@ s3_resource = boto3.resource('s3')
 dynamodb = boto3.client('dynamodb',region_name=os.environ['region'])
 sns = boto3.client('sns',region_name=os.environ['region'])
 
-#Get DynamoDB table name
-#def get_table():
-#    tables = dynamodb.list_tables(
-#    )
-#    mytable = tables['TableNames']
-#    for table in mytable:
-#        if 'tf-thumbnail-resized' in table:
-#            return table
-
 #Get the S3InURL from the DynamoDB
 def get_bucket_in(umail, UUID):
     s3bucketin = dynamodb.query(
@@ -86,28 +77,6 @@ def get_name(umail, UUID):
             )
     return name_of_user
 
-#Get the user phone number from the DynamoDB
-def get_phone(umail, UUID):
-    phone_number = dynamodb.query(
-             ExpressionAttributeNames={
-                '#email': 'Email',
-                '#uuid': 'UUID',
-                '#phone': 'Phone'
-            },
-            ExpressionAttributeValues={
-                ':email': {
-                    'S': umail,
-                },
-                ':uuid': {
-                    'S': UUID,
-                },
-            },
-            KeyConditionExpression='#email = :email AND #uuid = :uuid',
-            ProjectionExpression='#phone',
-            TableName=os.environ['table_name'],
-            )
-    return phone_number
-
 #Process the image and create a thumbnail
 def create_thumbnail(download_image, upload_image):
     #https://docs.python-guide.org/scenarios/imaging/
@@ -169,27 +138,24 @@ def update_s3out(umail, UUID, s3bucketout, new_UUID, file_extention):
                 UpdateExpression='SET #s3out = :s3out',
             )
 
+#Send email
+def sns_publish(sns_subj, sns_message):
+    sns.publish(TopicArn=os.environ['topic_arn'], Subject=sns_subj, Message=sns_message)
 
-#Get the SNS topic and topicArn            
-#def get_sns_topic():
-#    topic = sns.list_topics(
-#    )
-#    topicArns = topic['Topics']
-#    for topic in topicArns:
-#        if 'tf-thumbnail-resized' in topic["TopicArn"]:
-#                return topic["TopicArn"]
+#Format email
+def email_format(name, bucket, item):
+    sns_subj = "Task is completed!"
+    sns_message = """
+    Hello {}. Your image has been rendered.
 
-#Subscibe to SNS
-def sns_subscribe(phone_number):
-    subscriber = sns.subscribe(
-    TopicArn=os.environ['topic_arn'],
-    Protocol='sms',
-    Endpoint=phone_number
-    )
-
-#Send SMS
-def sns_publish(phone_number, sms_message):
-    sns.publish(PhoneNumber=phone_number, Message=sms_message)
+    ---------------------------------------------------------------------------------------------------------
+    Output summary:
+    ---------------------------------------------------------------------------------------------------------
+    The output bucket is: {}
+    The new image is: {}
+    ---------------------------------------------------------------------------------------------------------
+    """.format(name,bucket,item)
+    sns_publish(sns_subj, sns_message)
 
 def handler(event, context):
     
@@ -235,17 +201,13 @@ def handler(event, context):
 
                 #Update the S3Out with the new URL
                 update_s3out(umail, UUID, bucketout, str(new_UUID), file_extension)
-
-                #Get the phone number from DynamoDB and subscribe the phone number to SNS
-                phone_number = get_phone(umail, UUID)
-                phone_number = phone_number['Items'][0]['Phone']['S']
-                sns_subscribe(phone_number)
             
                 #Get the name of the user to send SNS notification
                 name_of_user = get_name(umail, UUID)
                 name_of_user = name_of_user['Items'][0]['Name']['S']
-                sms_message = "Hello " + name_of_user + ". Your image has been rendered." + "\n" + "The output bucket is: " + bucketout + "\n" + "The new image is: " + keyout
-                sns_publish(phone_number, sms_message)
+                
+                #Send email to user to notify job completed
+                email_format(name_of_user,bucketout,keyout)
 
             except Exception as e:
                 print(e)
