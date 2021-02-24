@@ -43,6 +43,7 @@ module "frontend" {
 module "sns" {
   source     = "./modules/sns"
   topic_name = var.topic_name
+  email      = var.email
 }
 
 module "lambda" {
@@ -51,6 +52,7 @@ module "lambda" {
   lambda_role   = module.iam.mytf_lambda_role
   region        = var.region
   dynamodb_name = var.dynamodb_name
+  stream_arn    = module.dynamodb.stream_arn
   topic_arn     = module.sns.topic_arn
 }
 
