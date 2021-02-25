@@ -17,3 +17,7 @@ variable "topic_arn" {
 variable "region" {
   type = string
 }
+
+variable "stream_arn" {
+  type = string
+}
